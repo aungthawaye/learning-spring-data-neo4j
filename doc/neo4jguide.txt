@@ -1,0 +1,35 @@
+Create 2 persons:
+    create (p1:Person {name:"person1", interests : ['Book','Game']})
+    create (p2:Person {name:"person2", interests : ['Book','Sports','Driving']})
+
+Create relationship from person1 to person2 but not from person2 to person1
+    match (p1:Person)
+    where p1.name = 'person1'
+    match (p2:Person)
+    where p2.name = 'person2'
+    create (p1) -[r:likes]-> (p2)
+
+To delete all nodes and relationships
+    match (n) detach delete n
+
+Find anyone who likes person2 based on above dataset
+    match (pAny:Person) -[r:likes]-> (p:Person { name : "person2"}) return pAny
+    (It will return 1 row)
+
+Find anyone who likes person1 based on above dataset
+    match (pAny:Person) -[r:likes]-> (p:Person { name : "person1"}) return pAny
+    (It won't return any row)
+
+Find out person1 likes person2 or not
+    match (p1:Person {name : "person1"}) -[r:likes]-> (p2:Person { name : "person2"}) return r
+    (It returns 1 row, so person1 likes person2)
+
+Find out person2 likes person1 or not
+    match (p2:Person {name : "person2"}) -[r:likes]-> (p1:Person { name : "person1"}) return r
+    (It returns NO row, so person2 doesn't likes person1)
+
+Find anyone who is interested in Book and Driving
+    match (p:Person) where has(p.interests) and ANY(interest IN p.interests WHERE interest IN ['Book','Driving']) return p
+
+Find anyone who is interested in Game and Jogging
+    match (p:Person) where has(p.interests) and ANY(interest IN p.interests WHERE interest IN ['Game','Jogging']) return p
